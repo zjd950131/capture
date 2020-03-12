@@ -5,7 +5,9 @@
 #include "capture.h"
 
 #define MAX_LOADSTRING 100
-
+//按钮ID
+#define IDB_ONE     3301  
+#define IDB_TWO     3302
 // 全局变量:
 HINSTANCE hInst;                                // 当前实例
 WCHAR szTitle[MAX_LOADSTRING];                  // 标题栏文本
@@ -15,7 +17,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 主窗口类名
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -123,23 +125,47 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    HWND hwndButtonCintinue;
+    HWND hwndButtonExit;
     switch (message)
     {
+    case WM_CREATE:
+    {
+        hwndButtonCintinue = CreateWindow(TEXT("button"),//必须为：button    
+            TEXT("取色"),//按钮上显示的字符    
+            WS_CHILD | WS_VISIBLE,
+            100, 240, 100, 50,  //按钮在界面上出现的位置
+            hWnd, (HMENU)IDB_ONE,  //设置按钮IDIDC_BUTTON_CONTINUE = 131自己定义ID
+            ((LPCREATESTRUCT)lParam)->hInstance, NULL);
+
+        hwndButtonExit = CreateWindow(TEXT("button"),//必须为：button    
+            TEXT("退出"),//按钮上显示的字符    
+            WS_CHILD | WS_VISIBLE,
+            400, 240, 100, 50,  //按钮在界面上出现的位置
+            hWnd, (HMENU)IDB_TWO,  //设置按钮ID IDC_BUTTON_EXIT =132自己定义ID
+            ((LPCREATESTRUCT)lParam)->hInstance, NULL);
+    }
+    return 0;
+
     case WM_COMMAND:
         {
-            int wmId = LOWORD(wParam);
-            // 分析菜单选择:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
+        switch (LOWORD(wParam))
+        {
+        case IDB_ONE:
+            //MessageBox(hwnd, L"您点击了第一个按钮。", L"提示", MB_OK | MB_ICONINFORMATION);  
+            SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)L"第一个按鈕已点击");
+            break;
+
+        case IDB_TWO:
+            //MessageBox(hwnd, L"您点击了第二个按钮。", L"提示", MB_OK | MB_ICONINFORMATION);  
+            SendMessage((HWND)lParam, WM_SETTEXT, (WPARAM)NULL, (LPARAM)L"第二个按鈕已点击");
+            break;
+
+
+        default:
+            break;
+        }
+
         }
         break;
     case WM_PAINT:
@@ -159,22 +185,3 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// “关于”框的消息处理程序。
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
-}
